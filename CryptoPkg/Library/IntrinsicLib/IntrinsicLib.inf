@@ -25,7 +25,6 @@
   MemoryIntrinsics.c
 
 [Sources.IA32]
-  CopyMem.c
   Math.c                    | GCC
 
   Ia32/MathLShiftS64.c      | MSFT
@@ -49,11 +48,7 @@
   Ia32/MathDivU64x64.c      | GCC
   Ia32/MathModU64x64.c      | GCC
 [Sources.X64]
-  CopyMem.c
   Math.c                    | GCC
-
-[Sources.RISCV64]
-  CopyMem.c
 
 [Packages]
   MdePkg/MdePkg.dec
