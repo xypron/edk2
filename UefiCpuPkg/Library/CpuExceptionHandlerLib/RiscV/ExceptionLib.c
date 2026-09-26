@@ -126,6 +126,57 @@ GetExceptionNameStr (
 }
 
 /**
+  Get instruction length.
+
+  @param  Instruction  Low 16 bits of the instruction.
+
+  @return Number of UINT16 in instruction.
+**/
+STATIC
+INTN
+GetInstructionLength (
+  IN UINT16  Instruction
+  )
+{
+  if ((Instruction & 0x03) != 0x03) {
+    return 1;
+  }
+  //
+  // Instructions with more than 32 bits are not yet specified
+  //
+  return 2;
+}
+
+/**
+  Display code leading to exception.
+
+  @param  Epc  Exception program counter.
+**/
+STATIC
+VOID
+ShowCode (
+  IN UINT64  Epc
+  )
+{
+  UINT16  *Pos;
+  INTN    Index;
+  INTN    Length;
+
+  Pos    = (UINT16 *)(UINTN)(Epc & ~1ULL);
+  Length = GetInstructionLength (*Pos);
+
+  InternalPrintMessage ("\nCode: ");
+  for (Index = -8; Index < 0; ++Index) {
+    InternalPrintMessage ("%04x ", Pos[Index]);
+  }
+
+  InternalPrintMessage ("(");
+  for (Index = 0; Index < Length; ++Index) {
+    InternalPrintMessage ("%04x%a", Pos[Index], (Index + 1 == Length) ? ")\n" : " ");
+  }
+}
+
+/**
   Display CPU information. This can be called by 3rd-party handlers
   set by RegisterCpuInterruptHandler.
 
@@ -184,6 +235,8 @@ DumpCpuContext (
 
   #undef REG
   #undef REGS
+
+  ShowCode (Regs->sepc);
 
   DumpCpuBacktrace (SystemContext);
 
